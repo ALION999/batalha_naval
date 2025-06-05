@@ -86,15 +86,25 @@ class AlunoPlayer():
                 x = coord[0]
                 y = coord[1]
 
-                if [x+2, y] in navios_encontrados and [x + 1, y] not in self.movimentos_realizados:
+
+                if [x + 2, y] in navios_encontrados and [x + 1, y] not in self.movimentos_realizados:
                     self.movimentos_realizados.append([x + 1, y])
-                    return Ataque(x+1, y)
-
-
-
-                self.movimentos_realizados.append([x, y])
-                return Ataque(x, y)
-            
+                    print(x+1, y)
+                    return Ataque(x + 1, y)
+                elif [x - 2, y] in navios_encontrados and [x - 1, y] not in self.movimentos_realizados:
+                    self.movimentos_realizados.append([x - 1, y])
+                    print(x - 1, y)
+                    return Ataque(x - 1, y)
+                elif [x, y + 2] in navios_encontrados and [x, y + 1] not in self.movimentos_realizados:
+                    self.movimentos_realizados.append([x, y + 1])
+                    print(x, y + 1)
+                    return Ataque(x, y + 1)
+                elif [x, y - 2] in navios_encontrados and [x, y - 1] not in self.movimentos_realizados:
+                    self.movimentos_realizados.append([x, y - 1])
+                    print(x, y - 2)
+                    return Ataque(x, y - 1)
+                else:
+                    continue
 
     def posicoes_navios(self) -> list[Navio]:
         """Determina as posições dos 5 navios no tabuleiro e retorna uma lista de objetos do tipo Navio.
