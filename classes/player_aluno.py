@@ -23,6 +23,8 @@ from classes._attack import Ataque
 from classes._ship import Navio
 from classes._pos_matriz import PosMatriz
 
+global navios_encontrados
+navios_encontrados = []
 class AlunoPlayer():
     """Classe que representa o jogador bot do aluno."""
 
@@ -36,8 +38,7 @@ class AlunoPlayer():
         """
         self.movimentos_realizados = list()
         self.tabuleiro = None           # o tabuleiro é inicializado automaticamente assim que o jogo começa
-        self.nome = "{Computeiros}"  # substitua!
-
+        self.nome = "Computeiros"  # substitua!
 
     def jogar(self, estado_atual_oponente, navios_afundados) -> Ataque:
         """Método para realizar uma jogada.
@@ -47,40 +48,65 @@ class AlunoPlayer():
         navios_afundados -- Lista de nomes navios afundados (em ordem de afundamento).
 
         Retorna um objeto do tipo Ataque com as coordenadas (x,y) da jogada.
-        """
+        """ 
         
-        for x in range(10):
-            if x % 2 == 0:
-                for y in range(10):
-                    if y % 2 == 0:
-                        continue
-                    if [x,y] not in self.movimentos_realizados:
+# [0, 0][0, 1][0, 2][0, 3][0, 4][0, 5][0, 6][0, 7][0, 8][0, 9]
+# [1, 0][1, 1][1, 2][1, 3][1, 4][1, 5][1, 6][1, 7][1, 8][1, 9]
+# [2, 0][2, 1][2, 2][2, 3][2, 4][2, 5][2, 6][2, 7][2, 8][2, 9]
+# [3, 0][3, 1][3, 2][3, 3][3, 4][3, 5][3, 6][3, 7][3, 8][3, 9]
+# [4, 0][4, 1][4, 2][4, 3][4, 4][4, 5][4, 6][4, 7][4, 8][4, 9]
+# [5, 0][5, 1][5, 2][5, 3][5, 4][5, 5][5, 6][5, 7][5, 8][5, 9]
+# [6, 0][6, 1][6, 2][6, 3][6, 4][6, 5][6, 6][6, 7][6, 8][6, 9]
+# [7, 0][7, 1][7, 2][7, 3][7, 4][7, 5][7, 6][7,7 ][7, 8][7, 9]
+# [8, 0][8, 1][8, 2][8, 3][8, 4][8, 5][8, 6][8, 7][8, 8][8, 9]
+# [9, 0][9, 1][9, 2][9, 3][9, 4][9, 5][9, 6][9, 7][9, 8][9, 9]
+        if [9, 8] not in self.movimentos_realizados:
+            for x in range(10):
+                if x % 2 == 0:
+                    for y in range(10):
+                        if estado_atual_oponente[x][y].status == StatusTab.NAVIO_ENCONTRADO.value and [x, y] not in navios_encontrados:
+                            navios_encontrados.append([x, y])
+
+                        if y % 2 == 0:
+                            continue
+                        if [x, y] not in self.movimentos_realizados:
                             self.movimentos_realizados.append([x, y])
                             return Ataque(x, y)
-            else:
-                for y in range(10):
-                    if y % 2 != 0:
-                        continue
-                    if [x,y] not in self.movimentos_realizados:
-                        self.movimentos_realizados.append([x,y])
-                        return Ataque(x,y)
+                else:
+                    for y in range(10):
+                        if y % 2 != 0:
+                            continue
+                        if [x, y] not in self.movimentos_realizados:
+                            self.movimentos_realizados.append([x, y])
+                            estado_atual_oponente[x][y]
+                            return Ataque(x, y)
 
+        else:
+            for coord in navios_encontrados:
+                x = coord[0]
+                y = coord[1]
+
+                if [x+2, y] in navios_encontrados and [x + 1, y] not in self.movimentos_realizados:
+                    self.movimentos_realizados.append([x + 1, y])
+                    return Ataque(x+1, y)
+
+
+
+                self.movimentos_realizados.append([x, y])
+                return Ataque(x, y)
+            
 
     def posicoes_navios(self) -> list[Navio]:
         """Determina as posições dos 5 navios no tabuleiro e retorna uma lista de objetos do tipo Navio.
-        
+
         É preciso determinar as posições de TODOS os 5 navios, ou seja,
         um navio de tamanho 5, um de tamanho 4, dois de tamanho 3 e um de tamanho 2.
         O nome do navio será determinado automaticamente pelo tamanho do navio dentro da classe Navio."""
 
         carrier_5 = Navio(5, [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)])
-        
         battleship_4 = Navio(4, [(9, 9), (9, 8), (9, 7), (9, 6)])
-
         cruiser_3 = Navio(3, [(3, 3), (3, 4), (3, 5)])
-
-        submarine_3 = Navio(3, [(4, 4), (5, 4), (6, 4)])
-
+        submarine_3 = Navio(3, [(4, 6), (5, 6), (6, 6)])
         destroyer_2 = Navio(2, [(5, 2), (5, 3)])
 
         navios = [carrier_5, battleship_4, cruiser_3, submarine_3, destroyer_2]
