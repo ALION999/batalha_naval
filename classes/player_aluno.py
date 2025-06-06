@@ -27,18 +27,22 @@ from classes._pos_matriz import PosMatriz
 global navios_encontrados
 global disparos
 global computado
-navios_encontrados = dict()
-disparos = [0]
-computado = []
 
-def radar(status, nome, x, y):
+navios_encontrados = dict()
+disparos = [0]  # define em qual diagonal estamos disparando (x + y)
+computado = []  # coordenadas que ja foram detectadas no radar
+
+
+def radar(status, nome, afundados, x, y):
     if status == StatusTab.NAVIO_ENCONTRADO.value:
-                    if nome not in navios_encontrados:
-                        navios_encontrados[nome] = [[x, y]]
-                        computado.append([x, y])
-                    elif [x, y] not in computado:
-                        navios_encontrados[nome] += [[x, y]]
-                        computado.append([x, y])
+        if nome not in navios_encontrados and nome not in afundados:
+            navios_encontrados[nome] = [[x, y]]
+            computado.append([x, y])
+
+        elif [x, y] not in computado:
+            navios_encontrados[nome] += [[x, y]]
+            computado.append([x, y])
+
 
 class AlunoPlayer():
     """Classe que representa o jogador bot do aluno."""
@@ -53,7 +57,7 @@ class AlunoPlayer():
         """
         self.movimentos_realizados = list()
         self.tabuleiro = None           # o tabuleiro é inicializado automaticamente assim que o jogo começa
-        self.nome = "Computeiros"  # substitua!
+        self.nome = "garotos de programa"  # substitua!
 
     def jogar(self, estado_atual_oponente, navios_afundados) -> Ataque:
         """Método para realizar uma jogada.
@@ -68,43 +72,49 @@ class AlunoPlayer():
         for x in range(10):
             for y in range(10):
 
-                # tenta afundar barcos ja descobertos
-                for key, value in navios_encontrados.items():
-                    if key not in navios_afundados:
-                        for coords in value:
-                            x1, y1 = coords[0], coords[1]
+                if [x, y] in self.movimentos_realizados:
 
-                            # baixo
-                            if [x1 - 1, y1] not in self.movimentos_realizados and x1 - 1 >= 0:
-                                self.movimentos_realizados.append([x1 - 1, y1])
-                                return Ataque(x1 - 1, y1)
+                    radar(estado_atual_oponente[x][y].status, estado_atual_oponente[x][y].nome_navio_atingido, navios_afundados, x, y)
 
-                            # cima
-                            if [x1 + 1, y1] not in self.movimentos_realizados and x1 + 1 <= 9:
-                                self.movimentos_realizados.append([x1 + 1, y1])
-                                return Ataque(x1 + 1, y1)
+                    # tenta afundar barcos ja encontrados
+                    for key, value in navios_encontrados.items():
+                        if key not in navios_afundados:
+                            for coords in value:
+                                x1, y1 = coords[0], coords[1]
 
-                            # esquerda
-                            if [x1, y1 - 1] not in self.movimentos_realizados and y1 - 1 >= 0:
-                                self.movimentos_realizados.append([x1, y1 - 1])
-                                return Ataque(x1, y1 - 1)
+                                # direita
+                                if [x1, y1 + 1] not in self.movimentos_realizados and y1 + 1 <= 9:
+                                    self.movimentos_realizados.append([x1, y1 + 1])
+                                    return Ataque(x1, y1 + 1)
 
-                            # direita
-                            if [x1, y1 + 1] not in self.movimentos_realizados and y1 + 1 <= 9:
-                                self.movimentos_realizados.append([x1, y1 + 1])
-                                return Ataque(x1, y1 + 1)
+                                # esquerda
+                                if [x1, y1 - 1] not in self.movimentos_realizados and y1 - 1 >= 0:
+                                    self.movimentos_realizados.append([x1, y1 - 1])
+                                    return Ataque(x1, y1 - 1)
+
+                                # baixo
+                                if [x1 - 1, y1] not in self.movimentos_realizados and x1 - 1 >= 0:
+                                    self.movimentos_realizados.append([x1 - 1, y1])
+                                    return Ataque(x1 - 1, y1)
+
+                                # cima
+                                if [x1 + 1, y1] not in self.movimentos_realizados and x1 + 1 <= 9:
+                                    self.movimentos_realizados.append([x1 + 1, y1])
+                                    return Ataque(x1 + 1, y1 )
 
                 # atira em uma linha diagonal
-                if [x, y] in self.movimentos_realizados:
-                    radar(estado_atual_oponente[x][y].status, estado_atual_oponente[x][y].nome_navio_atingido, x, y)
+
+                # BUG #
                 elif x + y == (disparos[-1] + 1):
                     self.movimentos_realizados.append([x, y])
 
-                    if x == 9 or x == x + y:
+                    if x == 9 or y == 0 or x == x + y:
                         disparos.append((x + y) + 1)
+                        print(disparos)
                     return Ataque(x, y)
-
-
+                    # após um ataque direcionado à um barco, tem casos onde a coordenada era uma que atualizava a diagonal de disparo, logo, essa diagonal vira fixa
+                    # por exemplo: a coordenada [9, 0]
+        return Ataque(0,0)
 
     def posicoes_navios(self) -> list[Navio]:
         """Determina as posições dos 5 navios no tabuleiro e retorna uma lista de objetos do tipo Navio.
