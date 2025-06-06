@@ -1,3 +1,4 @@
+
 # 🛳️ Batalha Naval
 
 **Batalha Naval** (também conhecida como *Battleships*) é um jogo de adivinhação estratégica para dois jogadores. É jogado em grades marcadas (em papel ou tabuleiro), nas quais cada jogador posiciona sua frota de navios de guerra. **As posições dos navios do adversário são mantidas ocultas**. Os jogadores se revezam efetuando "disparos" no tabuleiro do oponente e o objetivo é destruir completamente a frota adversária, ou seja, afundar todos os seus navios. O jogo termina quando um dos jogadores afunda toda a frota inimiga.

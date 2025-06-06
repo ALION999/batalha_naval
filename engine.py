@@ -70,8 +70,12 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
     use_gui -- booleano indicando se a interface gráfica deve ser usada
     """
     res = f'Jogador 1: {jogador1.nome} vs Jogador 2: {jogador2.nome}\n'
-    jogador1.tabuleiro = Tabuleiro(jogador1.posicoes_navios())
-    navios_p1 = deepcopy(jogador1.tabuleiro.navios)
+    
+    navios_p1 = jogador1.posicoes_navios()
+    for n in navios_p1:
+        n.set_name(player='one')    
+    jogador1.tabuleiro = Tabuleiro(navios_p1)    
+    navios_p1_copy = deepcopy(jogador1.tabuleiro.navios)
     try:
         jogador1.tabuleiro.posicionar_navios()
     except Exception as e:
@@ -81,8 +85,11 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
         res += f'\nJogador {jogador2.nome} ganhou!'
         return
 
-    jogador2.tabuleiro = Tabuleiro(jogador2.posicoes_navios())
-    navios_p2 = deepcopy(jogador2.tabuleiro.navios)
+    navios_p2 = jogador2.posicoes_navios()
+    for n in navios_p2:
+        n.set_name(player='two')
+    jogador2.tabuleiro = Tabuleiro(navios_p2)
+    navios_p2_copy = deepcopy(jogador2.tabuleiro.navios)
     try:
         jogador2.tabuleiro.posicionar_navios()
     except Exception as e:
@@ -100,7 +107,7 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
         alvo = jogador2.tabuleiro if turno % 2 == 0 else jogador1.tabuleiro
 
         try:
-            navios_inalterados(jogador1, jogador2, navios_p1, navios_p2)
+            navios_inalterados(jogador1, jogador2, navios_p1_copy, navios_p2_copy)
         except Exception as e:
             print(f"Erro ao executar a próxima jogada: {e}")
             import traceback
