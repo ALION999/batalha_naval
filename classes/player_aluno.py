@@ -23,8 +23,23 @@ from classes._attack import Ataque
 from classes._ship import Navio
 from classes._pos_matriz import PosMatriz
 
+
 global navios_encontrados
-navios_encontrados = []
+global disparos
+global computado
+navios_encontrados = dict()
+disparos = [0]
+computado = []
+
+def radar(status, nome, x, y):
+    if status == StatusTab.NAVIO_ENCONTRADO.value:
+                    if nome not in navios_encontrados:
+                        navios_encontrados[nome] = [[x, y]]
+                        computado.append([x, y])
+                    elif [x, y] not in computado:
+                        navios_encontrados[nome] += [[x, y]]
+                        computado.append([x, y])
+
 class AlunoPlayer():
     """Classe que representa o jogador bot do aluno."""
 
@@ -48,63 +63,48 @@ class AlunoPlayer():
         navios_afundados -- Lista de nomes navios afundados (em ordem de afundamento).
 
         Retorna um objeto do tipo Ataque com as coordenadas (x,y) da jogada.
-        """ 
-        
-# [0, 0][0, 1][0, 2][0, 3][0, 4][0, 5][0, 6][0, 7][0, 8][0, 9]
-# [1, 0][1, 1][1, 2][1, 3][1, 4][1, 5][1, 6][1, 7][1, 8][1, 9]
-# [2, 0][2, 1][2, 2][2, 3][2, 4][2, 5][2, 6][2, 7][2, 8][2, 9]
-# [3, 0][3, 1][3, 2][3, 3][3, 4][3, 5][3, 6][3, 7][3, 8][3, 9]
-# [4, 0][4, 1][4, 2][4, 3][4, 4][4, 5][4, 6][4, 7][4, 8][4, 9]
-# [5, 0][5, 1][5, 2][5, 3][5, 4][5, 5][5, 6][5, 7][5, 8][5, 9]
-# [6, 0][6, 1][6, 2][6, 3][6, 4][6, 5][6, 6][6, 7][6, 8][6, 9]
-# [7, 0][7, 1][7, 2][7, 3][7, 4][7, 5][7, 6][7,7 ][7, 8][7, 9]
-# [8, 0][8, 1][8, 2][8, 3][8, 4][8, 5][8, 6][8, 7][8, 8][8, 9]
-# [9, 0][9, 1][9, 2][9, 3][9, 4][9, 5][9, 6][9, 7][9, 8][9, 9]
-        if [9, 8] not in self.movimentos_realizados:
-            for x in range(10):
-                if x % 2 == 0:
-                    for y in range(10):
-                        if estado_atual_oponente[x][y].status == StatusTab.NAVIO_ENCONTRADO.value and [x, y] not in navios_encontrados:
-                            navios_encontrados.append([x, y])
+        """
 
-                        if y % 2 == 0:
-                            continue
-                        if [x, y] not in self.movimentos_realizados:
-                            self.movimentos_realizados.append([x, y])
-                            return Ataque(x, y)
-                else:
-                    for y in range(10):
-                        if y % 2 != 0:
-                            continue
-                        if [x, y] not in self.movimentos_realizados:
-                            self.movimentos_realizados.append([x, y])
-                            estado_atual_oponente[x][y]
-                            return Ataque(x, y)
+        for x in range(10):
+            for y in range(10):
 
-        else:
-            for coord in navios_encontrados:
-                x = coord[0]
-                y = coord[1]
+                # tenta afundar barcos ja descobertos
+                for key, value in navios_encontrados.items():
+                    if key not in navios_afundados:
+                        for coords in value:
+                            x1, y1 = coords[0], coords[1]
+
+                            # baixo
+                            if [x1 - 1, y1] not in self.movimentos_realizados and x1 - 1 >= 0:
+                                self.movimentos_realizados.append([x1 - 1, y1])
+                                return Ataque(x1 - 1, y1)
+
+                            # cima
+                            if [x1 + 1, y1] not in self.movimentos_realizados and x1 + 1 <= 9:
+                                self.movimentos_realizados.append([x1 + 1, y1])
+                                return Ataque(x1 + 1, y1)
+
+                            # esquerda
+                            if [x1, y1 - 1] not in self.movimentos_realizados and y1 - 1 >= 0:
+                                self.movimentos_realizados.append([x1, y1 - 1])
+                                return Ataque(x1, y1 - 1)
+
+                            # direita
+                            if [x1, y1 + 1] not in self.movimentos_realizados and y1 + 1 <= 9:
+                                self.movimentos_realizados.append([x1, y1 + 1])
+                                return Ataque(x1, y1 + 1)
+
+                # atira em uma linha diagonal
+                if [x, y] in self.movimentos_realizados:
+                    radar(estado_atual_oponente[x][y].status, estado_atual_oponente[x][y].nome_navio_atingido, x, y)
+                elif x + y == (disparos[-1] + 1):
+                    self.movimentos_realizados.append([x, y])
+
+                    if x == 9 or x == x + y:
+                        disparos.append((x + y) + 1)
+                    return Ataque(x, y)
 
 
-                if [x + 2, y] in navios_encontrados and [x + 1, y] not in self.movimentos_realizados:
-                    self.movimentos_realizados.append([x + 1, y])
-                    print(x+1, y)
-                    return Ataque(x + 1, y)
-                elif [x - 2, y] in navios_encontrados and [x - 1, y] not in self.movimentos_realizados:
-                    self.movimentos_realizados.append([x - 1, y])
-                    print(x - 1, y)
-                    return Ataque(x - 1, y)
-                elif [x, y + 2] in navios_encontrados and [x, y + 1] not in self.movimentos_realizados:
-                    self.movimentos_realizados.append([x, y + 1])
-                    print(x, y + 1)
-                    return Ataque(x, y + 1)
-                elif [x, y - 2] in navios_encontrados and [x, y - 1] not in self.movimentos_realizados:
-                    self.movimentos_realizados.append([x, y - 1])
-                    print(x, y - 2)
-                    return Ataque(x, y - 1)
-                else:
-                    continue
 
     def posicoes_navios(self) -> list[Navio]:
         """Determina as posições dos 5 navios no tabuleiro e retorna uma lista de objetos do tipo Navio.
@@ -121,3 +121,14 @@ class AlunoPlayer():
 
         navios = [carrier_5, battleship_4, cruiser_3, submarine_3, destroyer_2]
         return navios
+
+# [0, 0][0, 1][0, 2][0, 3][0, 4][0, 5][0, 6][0, 7][0, 8][0, 9]
+# [1, 0][1, 1][1, 2][1, 3][1, 4][1, 5][1, 6][1, 7][1, 8][1, 9]
+# [2, 0][2, 1][2, 2][2, 3][2, 4][2, 5][2, 6][2, 7][2, 8][2, 9]
+# [3, 0][3, 1][3, 2][3, 3][3, 4][3, 5][3, 6][3, 7][3, 8][3, 9]
+# [4, 0][4, 1][4, 2][4, 3][4, 4][4, 5][4, 6][4, 7][4, 8][4, 9]
+# [5, 0][5, 1][5, 2][5, 3][5, 4][5, 5][5, 6][5, 7][5, 8][5, 9]
+# [6, 0][6, 1][6, 2][6, 3][6, 4][6, 5][6, 6][6, 7][6, 8][6, 9]
+# [7, 0][7, 1][7, 2][7, 3][7, 4][7, 5][7, 6][7,7 ][7, 8][7, 9]
+# [8, 0][8, 1][8, 2][8, 3][8, 4][8, 5][8, 6][8, 7][8, 8][8, 9]
+# [9, 0][9, 1][9, 2][9, 3][9, 4][9, 5][9, 6][9, 7][9, 8][9, 9]
