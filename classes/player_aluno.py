@@ -48,7 +48,7 @@ class AlunoPlayer():
 
     def __init__(self):
         """Inicializa o jogador.
-        
+
         Atributos:
         movimentos_realizados -- Lista de movimentos já realizados pelo jogador.
         tabuleiro -- Tabuleiro do jogador (inicializado automaticamente assim que o jogo começa).

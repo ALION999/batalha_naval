@@ -39,7 +39,7 @@ def navios_inalterados(jogador1, jogador2, navios_p1, navios_p2):
     for i in range(len(navios_p1)):
         if navios_p1[i].coords != jogador1.tabuleiro.navios[i].coords:
             raise ValueError(
-                f"Navio {i} do jogador 1 foi modificado durante o jogo. " + 
+                f"Navio {i} do jogador 1 foi modificado durante o jogo. "
                 f"Posições originais: {navios_p1[i].coords}, novas posições: {jogador1.tabuleiro.navios[i].coords}")
         if navios_p2[i].coords != jogador2.tabuleiro.navios[i].coords:
             raise ValueError(
@@ -71,14 +71,14 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
     use_gui -- booleano indicando se a interface gráfica deve ser usada
     """
     res = f'Jogador 1: {jogador1.nome} vs Jogador 2: {jogador2.nome}\n'
-    
+
     navios_p1 = jogador1.posicoes_navios()
     for n in navios_p1:
         n.set_name(player='one')
     if len(set(n.nome for n in navios_p1)) != len(navios_p1):
         raise ValueError("Nomes de navios repetidos no jogador 1.")
-    
-    jogador1.tabuleiro = Tabuleiro(navios_p1)    
+
+    jogador1.tabuleiro = Tabuleiro(navios_p1)
     navios_p1_copy = deepcopy(jogador1.tabuleiro.navios)
     try:
         jogador1.tabuleiro.posicionar_navios()
@@ -94,7 +94,7 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
         n.set_name(player='two')
     if len(set(n.nome for n in navios_p2)) != len(navios_p2):
         raise ValueError("Nomes de navios repetidos no jogador 2.")
-    
+
     jogador2.tabuleiro = Tabuleiro(navios_p2)
     navios_p2_copy = deepcopy(jogador2.tabuleiro.navios)
     try:
@@ -126,7 +126,7 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
         estado_copia = deepcopy(estado)
         navios_afundados = alvo.navios_afundados()
         jogada = atacante.jogar(estado, navios_afundados)
-        
+
         try:
             estado_publico_inalterado(estado, estado_copia)
         except Exception as e:
@@ -135,7 +135,7 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
             traceback.print_exc()
             res += f'\nErro ao executar a próxima jogada: {e}'
             return
-        
+
         atacante.movimentos_realizados.append(jogada)
         resultado = alvo.receber_ataque(jogada)
 
@@ -146,7 +146,7 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
         else:
             if not is_tournament:
                 update_terminal(jogada, resultado, turno,
-                            jogador1.nome, jogador2.nome)
+                                jogador1.nome, jogador2.nome)
 
         turno += 1
 
