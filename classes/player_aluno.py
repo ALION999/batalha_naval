@@ -27,7 +27,6 @@ from classes._pos_matriz import PosMatriz
 global navios_encontrados
 global disparos
 global computado
-
 navios_encontrados = dict()
 disparos = [0]  # define em qual diagonal estamos disparando (x + y)
 computado = []  # coordenadas que ja foram detectadas no radar
@@ -57,7 +56,8 @@ class AlunoPlayer():
         """
         self.movimentos_realizados = list()
         self.tabuleiro = None           # o tabuleiro é inicializado automaticamente assim que o jogo começa
-        self.nome = "garotos de programa"  # substitua!
+        self.nome = "garotos de programa"
+        self.shoot = 0
 
     def jogar(self, estado_atual_oponente, navios_afundados) -> Ataque:
         """Método para realizar uma jogada.
@@ -100,21 +100,17 @@ class AlunoPlayer():
                                 # cima
                                 if [x1 + 1, y1] not in self.movimentos_realizados and x1 + 1 <= 9:
                                     self.movimentos_realizados.append([x1 + 1, y1])
-                                    return Ataque(x1 + 1, y1 )
+                                    return Ataque(x1 + 1, y1)
 
                 # atira em uma linha diagonal
-
-                # BUG #
                 elif x + y == (disparos[-1] + 1):
                     self.movimentos_realizados.append([x, y])
 
                     if x == 9 or y == 0 or x == x + y:
                         disparos.append((x + y) + 1)
-                        print(disparos)
                     return Ataque(x, y)
-                    # após um ataque direcionado à um barco, tem casos onde a coordenada era uma que atualizava a diagonal de disparo, logo, essa diagonal vira fixa
-                    # por exemplo: a coordenada [9, 0]
-        return Ataque(0,0)
+        disparos.append(disparos[-1] + 2)
+        return Ataque(7, 8)
 
     def posicoes_navios(self) -> list[Navio]:
         """Determina as posições dos 5 navios no tabuleiro e retorna uma lista de objetos do tipo Navio.

@@ -31,5 +31,13 @@ class Navio:
         else:
             return "Submarine"
 
+    @classmethod
+    def reset_cruiser_flags(cls):
+        """Remove todos os atributos _cruiser_created_* da classe. 
+        Isso é necessário para reiniciar o jogo e garantir que os navios sejam criados corretamente."""
+        attrs_to_remove = [attr for attr in vars(cls) if attr.startswith("_cruiser_created_")]
+        for attr in attrs_to_remove:
+            delattr(cls, attr)
+
     def __str__(self):
         return f"Navio(tamanho={self.tamanho}, coords={self.coords}, posicoes_atingidas={self.posicoes_atingidas})"

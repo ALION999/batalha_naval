@@ -7,6 +7,7 @@ from classes.bot_linear import BotPlayerLinear
 from classes.bot_random import BotPlayerRandom
 from classes.player_aluno import AlunoPlayer
 from copy import deepcopy
+from classes._ship import Navio
 
 
 def run_vs_bot(use_gui=True, bot_type='', tournament=False):
@@ -73,7 +74,10 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
     
     navios_p1 = jogador1.posicoes_navios()
     for n in navios_p1:
-        n.set_name(player='one')    
+        n.set_name(player='one')
+    if len(set(n.nome for n in navios_p1)) != len(navios_p1):
+        raise ValueError("Nomes de navios repetidos no jogador 1.")
+    
     jogador1.tabuleiro = Tabuleiro(navios_p1)    
     navios_p1_copy = deepcopy(jogador1.tabuleiro.navios)
     try:
@@ -88,6 +92,9 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
     navios_p2 = jogador2.posicoes_navios()
     for n in navios_p2:
         n.set_name(player='two')
+    if len(set(n.nome for n in navios_p2)) != len(navios_p2):
+        raise ValueError("Nomes de navios repetidos no jogador 2.")
+    
     jogador2.tabuleiro = Tabuleiro(navios_p2)
     navios_p2_copy = deepcopy(jogador2.tabuleiro.navios)
     try:
@@ -143,6 +150,7 @@ def jogar_partida(jogador1, jogador2, use_gui, is_tournament=False):
 
         turno += 1
 
+    Navio.reset_cruiser_flags()
     if gui:
         res += gui.mostrar_resultado(jogador1, jogador2)
     else:
