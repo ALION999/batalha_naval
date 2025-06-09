@@ -1,6 +1,6 @@
 # Nome completo do primeiro membro: Roger Honorato
 # RA do primeiro membro: 247617
-# Nome completo do segundo membro: [Segundo membro da equipe]
+# Nome completo do segundo membro: Leonardo Palio da Silva
 # RA do segundo membro: [Segundo membro da equipe]
 
 '''
@@ -27,20 +27,6 @@ from classes._pos_matriz import PosMatriz
 global navios_encontrados
 global disparos
 global computado
-navios_encontrados = dict()
-disparos = [0]  # define em qual diagonal estamos disparando (x + y)
-computado = []  # coordenadas que ja foram detectadas no radar
-
-
-def radar(status, nome, afundados, x, y):
-    if status == StatusTab.NAVIO_ENCONTRADO.value:
-        if nome not in navios_encontrados and nome not in afundados:
-            navios_encontrados[nome] = [[x, y]]
-            computado.append([x, y])
-
-        elif [x, y] not in computado:
-            navios_encontrados[nome] += [[x, y]]
-            computado.append([x, y])
 
 
 class AlunoPlayer():
@@ -56,8 +42,19 @@ class AlunoPlayer():
         """
         self.movimentos_realizados = list()
         self.tabuleiro = None           # o tabuleiro é inicializado automaticamente assim que o jogo começa
-        self.nome = "garotos de programa"
-        self.shoot = 0
+        self.nome = "garotos de pograma"
+        self.navios_encontrados = dict()
+        self.disparos = [0]  # define em qual diagonal estamos disparando (x + y)
+        self.computado = []  # coordenadas que ja foram detectadas no radar
+
+    def radar(self, status, nome, afundados, x, y):
+        if status == StatusTab.NAVIO_ENCONTRADO.value:
+            if nome not in self.navios_encontrados and nome not in afundados:
+                self.navios_encontrados[nome] = [[x, y]]
+                self.computado.append([x, y])
+            elif [x, y] not in self.computado:
+                self.navios_encontrados[nome] += [[x, y]]
+                self.computado.append([x, y])
 
     def jogar(self, estado_atual_oponente, navios_afundados) -> Ataque:
         """Método para realizar uma jogada.
@@ -74,10 +71,10 @@ class AlunoPlayer():
 
                 if [x, y] in self.movimentos_realizados:
 
-                    radar(estado_atual_oponente[x][y].status, estado_atual_oponente[x][y].nome_navio_atingido, navios_afundados, x, y)
+                    self.radar(estado_atual_oponente[x][y].status, estado_atual_oponente[x][y].nome_navio_atingido, navios_afundados, x, y)
 
                     # tenta afundar barcos ja encontrados
-                    for key, value in navios_encontrados.items():
+                    for key, value in self.navios_encontrados.items():
                         if key not in navios_afundados:
                             for coords in value:
                                 x1, y1 = coords[0], coords[1]
@@ -103,13 +100,13 @@ class AlunoPlayer():
                                     return Ataque(x1 + 1, y1)
 
                 # atira em uma linha diagonal
-                elif x + y == (disparos[-1] + 1):
+                elif x + y == (self.disparos[-1] + 1):
                     self.movimentos_realizados.append([x, y])
 
                     if x == 9 or y == 0 or x == x + y:
-                        disparos.append((x + y) + 1)
+                        self.disparos.append((x + y) + 1)
                     return Ataque(x, y)
-        disparos.append(disparos[-1] + 2)
+        self.disparos.append(self.disparos[-1] + 2)
         return Ataque(7, 8)
 
     def posicoes_navios(self) -> list[Navio]:
