@@ -1,7 +1,7 @@
 # Nome completo do primeiro membro: Roger Honorato
 # RA do primeiro membro: 247617
-# Nome completo do segundo membro: Leonardo Palio da Silva
-# RA do segundo membro: [Segundo membro da equipe]
+# Nome completo do segundo membro: Leonardo Paillo da Silva
+# RA do segundo membro: 198218
 
 '''
 Implemente aqui a sua estratégia de ataque e a posição dos navios.
@@ -23,12 +23,6 @@ from classes._attack import Ataque
 from classes._ship import Navio
 from classes._pos_matriz import PosMatriz
 
-
-global navios_encontrados
-global disparos
-global computado
-
-
 class AlunoPlayer():
     """Classe que representa o jogador bot do aluno."""
 
@@ -43,11 +37,14 @@ class AlunoPlayer():
         self.movimentos_realizados = list()
         self.tabuleiro = None           # o tabuleiro é inicializado automaticamente assim que o jogo começa
         self.nome = "garotos de pograma"
-        self.navios_encontrados = dict()
+        self.navios_encontrados = dict()  # nome : coordenadas
         self.disparos = [0]  # define em qual diagonal estamos disparando (x + y)
         self.computado = []  # coordenadas que ja foram detectadas no radar
 
     def radar(self, status, nome, afundados, x, y):
+        """ Identifica coordenadas onde os navios inimigos estão, e os adiciona ao dicionário
+        
+        """
         if status == StatusTab.NAVIO_ENCONTRADO.value:
             if nome not in self.navios_encontrados and nome not in afundados:
                 self.navios_encontrados[nome] = [[x, y]]
@@ -124,14 +121,3 @@ class AlunoPlayer():
 
         navios = [carrier_5, battleship_4, cruiser_3, submarine_3, destroyer_2]
         return navios
-
-# [0, 0][0, 1][0, 2][0, 3][0, 4][0, 5][0, 6][0, 7][0, 8][0, 9]
-# [1, 0][1, 1][1, 2][1, 3][1, 4][1, 5][1, 6][1, 7][1, 8][1, 9]
-# [2, 0][2, 1][2, 2][2, 3][2, 4][2, 5][2, 6][2, 7][2, 8][2, 9]
-# [3, 0][3, 1][3, 2][3, 3][3, 4][3, 5][3, 6][3, 7][3, 8][3, 9]
-# [4, 0][4, 1][4, 2][4, 3][4, 4][4, 5][4, 6][4, 7][4, 8][4, 9]
-# [5, 0][5, 1][5, 2][5, 3][5, 4][5, 5][5, 6][5, 7][5, 8][5, 9]
-# [6, 0][6, 1][6, 2][6, 3][6, 4][6, 5][6, 6][6, 7][6, 8][6, 9]
-# [7, 0][7, 1][7, 2][7, 3][7, 4][7, 5][7, 6][7,7 ][7, 8][7, 9]
-# [8, 0][8, 1][8, 2][8, 3][8, 4][8, 5][8, 6][8, 7][8, 8][8, 9]
-# [9, 0][9, 1][9, 2][9, 3][9, 4][9, 5][9, 6][9, 7][9, 8][9, 9]
